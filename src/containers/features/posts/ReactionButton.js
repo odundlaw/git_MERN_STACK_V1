@@ -1,5 +1,4 @@
 import React from "react";
-import { useDispatch } from "react-redux";
 
 const reactionEmoji = {
   thumbsUp: "👍",
@@ -10,7 +9,6 @@ const reactionEmoji = {
 };
 
 const ReactionButton = ({ post, updatePostReaction }) => {
-  const dispatch = useDispatch();
 
   const updateReactions = (post, name) => {
     updatePostReaction(post, name);
