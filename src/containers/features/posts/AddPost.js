@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { addNewPost, updateSinglePost } from "../../../slices/postSlices";
 import withRouter from "../../../hoc/WithRouter";
 import { unwrapResult } from "@reduxjs/toolkit";
+import DisplayAuth from "../../Auth/DisplayAuth";
 
 class AddPost extends Component {
   constructor(props) {
@@ -102,93 +103,96 @@ class AddPost extends Component {
   };
 
   render() {
-    const userList = this.props.users.map((user) => (
+    const userList = "" /* this.props.users.map((user) => (
       <option value={user.userId} key={user.userId}>
         {user.name}
       </option>
-    ));
+    )); */
     return (
-      <div className="flex flex-col w-full justify-center items-center space-y-4">
-        <h3 className="text-2xl font-semibold text-slate-700 mb-5">
-          {this.state.isEditing ? "Edit Post Form" : "Add Post Form"}
-        </h3>
-        {this.state.error && (
-          <span className="p-2 w-[50%] bg-red-200 text-white text-sm rounded-sm text-center cursor-pointer border border-red-400">
-            {this.state.error}
-            <button
-              className="text-black float-right text-lg"
-              onClick={() => this.setState({ error: "" })}
-            >
-              x
-            </button>
-          </span>
-        )}
-        <form className="flex flex-col w-[50%] justify-center space-y-3.5">
-          <div className="flex flex-col space-y-1">
-            <label htmlFor="postTitle" className="text-slate-600">
-              Post Title:
-            </label>
-            <input
-              type="text"
-              id="title"
-              name="title"
-              value={this.state.title}
-              onChange={this.inputChangeHandler}
-              className="p-1 border border-slate-400 ring-0 outline-none rounded-sm"
-            />
-          </div>
-          <div className="flex flex-col space-y-1">
-            <label htmlFor="postUser" className="text-slate-600">
-              Post Author:
-            </label>
-            <select
-              name="userId"
-              id="userId"
-              value={this.state.userId}
-              onChange={this.inputChangeHandler}
-              className="p-1.5 border border-slate-400 ring-0 outline-none rounded-sm text-sm bg-slate-50 space-y-2"
-              disabled={
-                Boolean(this.state.isEditing) && Boolean(this.state.userId)
-              }
-            >
-              <option value="">--Select User--</option>
-              {userList}
-            </select>
-          </div>
-          <div className="flex flex-col space-y-1">
-            <label htmlFor="postContent" className="text-slate-600">
-              Post Content:
-            </label>
-            <textarea
-              id="content"
-              name="content"
-              value={this.state.content}
-              onChange={this.inputChangeHandler}
-              className="pb-6 px-1 py-5 border border-slate-400 ring-0 outline-none rounded-sm"
-            />
-            {this.state.isEditing && (
+      <>
+        <DisplayAuth signOut={this.props.onSignOut} />
+        <div className="flex flex-col w-full justify-center items-center space-y-4">
+          <h3 className="text-2xl font-semibold text-slate-700 mb-5">
+            {this.state.isEditing ? "Edit Post Form" : "Add Post Form"}
+          </h3>
+          {this.state.error && (
+            <span className="p-2 w-[50%] bg-red-200 text-white text-sm rounded-sm text-center cursor-pointer border border-red-400">
+              {this.state.error}
+              <button
+                className="text-black float-right text-lg"
+                onClick={() => this.setState({ error: "" })}
+              >
+                x
+              </button>
+            </span>
+          )}
+          <form className="flex flex-col w-[50%] justify-center space-y-3.5">
+            <div className="flex flex-col space-y-1">
+              <label htmlFor="postTitle" className="text-slate-600">
+                Post Title:
+              </label>
               <input
-                type="hidden"
-                value={this.state.editPostId}
-                id="postId"
-                name="postId"
+                type="text"
+                id="title"
+                name="title"
+                value={this.state.title}
+                onChange={this.inputChangeHandler}
+                className="p-1 border border-slate-400 ring-0 outline-none rounded-sm"
               />
-            )}
-          </div>
-          <button
-            type="submit"
-            onClick={
-              this.state.isEditing
-                ? this.handleSubmitEditPost
-                : this.handleSubmitPost
-            }
-            className="p-2 rounded-full bg-purple-500 text-white hover:bg-purple-400 transition-all"
-            disabled={this.state.submitting}
-          >
-            {this.state.submitting ? "Saving post..." : "Save Post"}
-          </button>
-        </form>
-      </div>
+            </div>
+            <div className="flex flex-col space-y-1">
+              <label htmlFor="postUser" className="text-slate-600">
+                Post Author:
+              </label>
+              <select
+                name="userId"
+                id="userId"
+                value={this.state.userId}
+                onChange={this.inputChangeHandler}
+                className="p-1.5 border border-slate-400 ring-0 outline-none rounded-sm text-sm bg-slate-50 space-y-2"
+                disabled={
+                  Boolean(this.state.isEditing) && Boolean(this.state.userId)
+                }
+              >
+                <option value="">--Select User--</option>
+                {userList}
+              </select>
+            </div>
+            <div className="flex flex-col space-y-1">
+              <label htmlFor="postContent" className="text-slate-600">
+                Post Content:
+              </label>
+              <textarea
+                id="content"
+                name="content"
+                value={this.state.content}
+                onChange={this.inputChangeHandler}
+                className="pb-6 px-1 py-5 border border-slate-400 ring-0 outline-none rounded-sm"
+              />
+              {this.state.isEditing && (
+                <input
+                  type="hidden"
+                  value={this.state.editPostId}
+                  id="postId"
+                  name="postId"
+                />
+              )}
+            </div>
+            <button
+              type="submit"
+              onClick={
+                this.state.isEditing
+                  ? this.handleSubmitEditPost
+                  : this.handleSubmitPost
+              }
+              className="p-2 rounded-full bg-purple-500 text-white hover:bg-purple-400 transition-all"
+              disabled={this.state.submitting}
+            >
+              {this.state.submitting ? "Saving post..." : "Save Post"}
+            </button>
+          </form>
+        </div>
+      </>
     );
   }
 }

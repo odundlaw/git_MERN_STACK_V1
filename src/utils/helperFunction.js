@@ -1,3 +1,5 @@
+import axiosInstance from "../axios/axiosInstance";
+
 export const reactionEmoji = {
   thumbsUp: 0,
   hooray: 0,
@@ -19,5 +21,17 @@ export const fetchSinglePost = async (axios, postId) => {
     throw new Error("No Post Found with the Specified postId");
   } catch (err) {
     throw new Error(err);
+  }
+};
+
+export const createAndSignInUser = async (email, fullName) => {
+  try {
+    const user = await axiosInstance.post("signInUser", {
+      email: email,
+      fullName: fullName,
+    });
+    return user.data;
+  } catch (err) {
+    throw err;
   }
 };
