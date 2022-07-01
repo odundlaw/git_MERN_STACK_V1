@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router";
+import { Route, Routes, useNavigate } from "react-router";
 import { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -15,6 +15,8 @@ import axios from "./axios/axiosInstance";
 
 function App() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const { isLoggedIn, fullName } = useSelector((state) => state.users);
 
   const signOutUser = useCallback(() => {
@@ -24,6 +26,7 @@ function App() {
         localStorage.removeItem("token");
         localStorage.removeItem("email");
         localStorage.removeItem("expirationDate");
+        return navigate("/auth/login")
       })
       .catch((err) => console.log(err));
   }, [dispatch]);
@@ -51,10 +54,12 @@ function App() {
       axios
         .get(`user/${email}`)
         .then((user) => {
-          const factoredExpiration = tokenExpiration.getTime() - new Date();
+          const factoredExpiration =
+            tokenExpiration.getTime() - new Date().getTime();
           if (!isLoggedIn) {
             dispatch(
               signInUser({
+                userId: user.data.data._id?.toString(),
                 email: email,
                 fullName: user.data.data.fullName,
                 imageUrl: imageUrl,
@@ -75,9 +80,12 @@ function App() {
     <div className="">
       <Routes>
         <Route element={<Layout />}>
-          <Route path="/" element={<PostList />} />
+          <Route path="/" element={<PostList onSignOut={signOutUser} />} />
           <Route path="addPost" element={<AddPost onSignOut={signOutUser} />} />
-          <Route path="posts/post/:postId" element={<SinglePost />} />
+          <Route
+            path="posts/post/:postId"
+            element={<SinglePost onSignOut={signOutUser} />}
+          />
           <Route path="addPost/:postId" element={<AddPost />} />
           <Route
             path="auth/login"

@@ -31,7 +31,7 @@ class AddPost extends Component {
         title: singlePost.title,
         content: singlePost.content,
         isEditing: isEditing,
-        userId: singlePost.user,
+        userId: singlePost.user._id,
         editPostId: singlePost.id,
       });
     }
@@ -43,10 +43,10 @@ class AddPost extends Component {
 
   handleSubmitPost = (event) => {
     event.preventDefault();
-    
+
     const { title, content, userId } = this.state;
     const isValid = Boolean(title) && Boolean(content) && Boolean(userId);
-    
+
     if (!isValid) {
       return;
     }
@@ -89,7 +89,13 @@ class AddPost extends Component {
             postInfo: { title, content, user: userId },
           });
           unwrapResult(resultAction);
-          this.setState({ title: "", content: "", userId: "", editPostId: "", isEditing:"false" });
+          this.setState({
+            title: "",
+            content: "",
+            userId: "",
+            editPostId: "",
+            isEditing: "false",
+          });
           this.props.navigate(`/posts/post/${editPostId}`);
         } catch (err) {
           this.setState({ error: err.message });
@@ -103,11 +109,6 @@ class AddPost extends Component {
   };
 
   render() {
-    const userList = "" /* this.props.users.map((user) => (
-      <option value={user.userId} key={user.userId}>
-        {user.name}
-      </option>
-    )); */
     return (
       <>
         <DisplayAuth signOut={this.props.onSignOut} />
@@ -155,7 +156,12 @@ class AddPost extends Component {
                 }
               >
                 <option value="">--Select User--</option>
-                {userList}
+                <option
+                  value={this.props.users.userId?.toString()}
+                  key={this.props.users.userId?.toString()}
+                >
+                  {this.props.users.fullName}
+                </option>
               </select>
             </div>
             <div className="flex flex-col space-y-1">

@@ -1,15 +1,13 @@
 import React from "react";
-import { useSelector } from "react-redux";
 
-const PostAuthor = ({ userId }) => {
-  const author = useSelector((state) =>
-    state.users.find((user) => user.userId === userId)
-  );
+const PostAuthor = ({ author }) => {
 
   return (
     <span className="text-sm text-slate-400">
-      <span className="text-slate-600">Posted by: </span>
-      {author ? author.name : "No authour found"}
+      <span className="text-slate-600 sm:text-sm text-xs">Posted by: </span>
+      <span className="capitalize sm:text-sm text-xs">
+        {author ? author.fullName.toLowerCase() : "No authour found"}{" "}
+      </span>
     </span>
   );
 };

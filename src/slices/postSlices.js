@@ -4,11 +4,14 @@ import { reactionEmoji } from "../utils/helperFunction";
 
 export const updateSinglePost = createAsyncThunk(
   "posts/updateSinglePost",
-  async ({ postId, postInfo }, { rejectWithValue }) => {
+  async ({ postId, postInfo }, { rejectWithValue, getState }) => {
     try {
+      const token = getState().users.token || localStorage.getItem("storage");
+      if (!token) throw new Error("Your are not authorized!");
       const updatePost = await axios.patch(
         `post/edit-post/${postId}`,
-        postInfo
+        postInfo,
+        { headers: { Authorization: "Bearer " + token } }
       );
       return {
         id: postId,
@@ -23,10 +26,16 @@ export const updateSinglePost = createAsyncThunk(
 
 export const updatePostReactions = createAsyncThunk(
   "posts/updatePostReactions",
-  async ({ postId, postReaction, reactionCount }) => {
-    const updateReaction = await axios.patch(`post/post-reaction/${postId}/`, {
-      [postReaction]: reactionCount,
-    });
+  async ({ postId, postReaction, reactionCount }, { getState }) => {
+    const token = getState().users.token || localStorage.getItem("token");
+    if (!token) throw new Error("Your are not authorized");
+    const updateReaction = await axios.patch(
+      `post/post-reaction/${postId}/`,
+      {
+        [postReaction]: reactionCount,
+      },
+      { headers: { Authorization: "Bearer " + token } }
+    );
     return {
       id: postId,
       updatedResponse: updateReaction.data.post,
@@ -37,18 +46,26 @@ export const updatePostReactions = createAsyncThunk(
 
 export const deleteSinglePost = createAsyncThunk(
   "posts/deletePost",
-  async (postId) => {
-    const deleteResponse = await axios.delete(`post/delete-post/${postId}`);
+  async (postId, { getState }) => {
+    const token = getState().users.token || localStorage.getItem("token");
+    if (!token) throw new Error("You are not authorized");
+    const deleteResponse = await axios.delete(`post/delete-post/${postId}`, {
+      headers: { Authorization: "Bearer " + token },
+    });
     return { id: postId, status: deleteResponse.data.statusText };
   }
 );
 
 export const addNewPost = createAsyncThunk(
   "posts/addNewPost",
-  async (initialPost, { rejectWithValue }) => {
+  async (initialPost, { rejectWithValue, getState }) => {
     try {
+      const token = localStorage.getItem("token") || getState.users.token;
+      if (!token) throw new Error("Your are not Authorized");
       initialPost.reactions = reactionEmoji;
-      const response = await axios.post("post/create-post", initialPost);
+      const response = await axios.post("post/create-post", initialPost, {
+        headers: { Authorization: "Bearer " + token },
+      });
       return response.data.data;
     } catch (err) {
       return rejectWithValue({ message: err.response.data.message });
@@ -57,7 +74,11 @@ export const addNewPost = createAsyncThunk(
 );
 
 export const fetchAllPosts = createAsyncThunk("posts/fetchPosts", async () => {
-  const response = await axios.get("post/all-posts");
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("You are not authorized");
+  const response = await axios.get("post/all-posts", {
+    headers: { Authorization: "Bearer " + token },
+  });
   return response.data.posts;
 });
 

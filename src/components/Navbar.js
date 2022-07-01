@@ -1,33 +1,19 @@
-import { NavLink } from "react-router-dom";
+import NavigationItems from "./NavigationItems";
 
-function Navbar() {
+function Navbar({ click }) {
   return (
-    <nav className="relative flex justify-around w-[60%] sm:w-[40%] xl:w-[30%] items-baseline">
-      <NavLink
-        to="/"
-        className={({ isActive }) =>
-          isActive ? " bg-purple-300 h-full p-2" : "hover:bg-purple-300 p-2"
-        }
-      >
-        Posts
-      </NavLink>
-      <NavLink
-        to="addPost"
-        className={({ isActive }) =>
-          isActive ? " bg-purple-300 h-full p-2" : "hover:bg-purple-300 p-2"
-        }
-      >
-        Add Post
-      </NavLink>
-      <NavLink
-        to="auth/login"
-        className={({ isActive }) =>
-          isActive ? " bg-purple-300 h-full p-2" : "hover:bg-purple-300 p-2"
-        }
-      >
-        Authentication
-      </NavLink>
-    </nav>
+    <>
+      <div className="block sm:hidden" onClick={click}>
+        <div className="block sm:hidden bg-purple-400 p-2 rounded-sm cursor-pointer">
+          <div className="relative border-t-2 border-t-slate-100 w-[25px] h-1"></div>
+          <div className="relative border-t-2 border-t-slate-100 w-[25px] h-1"></div>
+          <div className="relative border-t-2 border-t-slate-100 w-[25px] h-1"></div>
+        </div>
+      </div>
+      <nav className="hidden sm:flex relative justify-around sm:w-[50%] sm:max-w-xs tems-baseline">
+        <NavigationItems />
+      </nav>
+    </>
   );
 }
 

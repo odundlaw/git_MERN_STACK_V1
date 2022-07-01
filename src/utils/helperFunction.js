@@ -10,7 +10,11 @@ export const reactionEmoji = {
 
 export const fetchSinglePost = async (axios, postId) => {
   try {
-    const fetchPost = await axios.get(`post/single-post/${postId}`);
+    const token = localStorage.getItem("token");
+    if(!token) throw new Error("You are not authorized")
+    const fetchPost = await axios.get(`post/single-post/${postId}`, {
+      headers: { Authorization: "Bearer " + token }
+    });
     if (fetchPost.data.statusText === "OK") {
       const restructuredPost = {
         data: { id: postId, ...fetchPost.data.post },
@@ -35,3 +39,4 @@ export const createAndSignInUser = async (email, fullName) => {
     throw err;
   }
 };
+

@@ -12,6 +12,7 @@ import { unwrapResult } from "@reduxjs/toolkit";
 
 import axios from "../../../axios/axiosInstance";
 import { fetchSinglePost } from "../../../utils/helperFunction";
+import DisplayAuth from "../../Auth/DisplayAuth";
 
 class SinglePost extends Component {
   constructor(props) {
@@ -50,7 +51,6 @@ class SinglePost extends Component {
         reactionCount: fetchPostBeforeUpdate.data.reactions[name] + 1,
       });
       const updatedValue = unwrapResult(update);
-      console.log(updatedValue)
       if (updatedValue.statusText === "OK") {
         this.setState({ post: updatedValue.updatedResponse });
       }
@@ -61,25 +61,29 @@ class SinglePost extends Component {
 
   render() {
     const { post } = this.state;
-    if (!post) {
-      return (
-        <section>
-          <h3>No Post Found!</h3>
-        </section>
-      );
-    }
 
     return (
-      <Post
-        post={post}
-        deletePost={this.handleDeletePost}
-        updatePostReaction={this.handleUpdatePostReactions}
-      />
+      <>
+        <DisplayAuth signOut={this.props.onSignOut} />
+        {!post ? (
+          <section>
+            <h2>NO Post Found!</h2>
+          </section>
+        ) : (
+          <Post
+            post={post}
+            deletePost={this.handleDeletePost}
+            updatePostReaction={this.handleUpdatePostReactions}
+          />
+        )}
+      </>
     );
   }
 }
 
-const mapStateToProps = (state) => ({});
+const mapStateToProps = (state) => ({
+  user: state.users,
+});
 
 const mapDispatchToProps = () => ({
   deleteSinglePost,

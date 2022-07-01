@@ -3,7 +3,7 @@ import { onAuthStateChanged, signInWithPopup } from "firebase/auth";
 import { googleProvider, auth } from "../../firebase/firebase";
 import { useSelector, useDispatch } from "react-redux/es/exports";
 import { signInUser } from "../../slices/userSlices";
-import { useLocation } from "react-router";
+import { useLocation, Navigate } from "react-router";
 import { createAndSignInUser } from "../../utils/helperFunction";
 
 const Auth = (props) => {
@@ -25,6 +25,7 @@ const Auth = (props) => {
               expirationDate.getTime() - new Date().getTime();
             dispatch(
               signInUser({
+                userId: user.userData._id.toString(),
                 isLoggedIn: true,
                 fullName: user.userData.fullName,
                 email: user.userData.email,
@@ -56,10 +57,10 @@ const Auth = (props) => {
     }
   };
 
-  /* if (isLoggedIn) {
+  if (isLoggedIn) {
     const from = location.state?.from;
     return <Navigate to={from ? from : "/"} />;
-  } */
+  }
 
   return (
     <div className="w-full items-center justify-center text-center">

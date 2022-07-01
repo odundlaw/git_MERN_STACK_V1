@@ -11,6 +11,7 @@ import PostArticle from "../../../components/posts/features/PostArticle";
 import { fetchSinglePost } from "../../../utils/helperFunction";
 
 import axios from "../../../axios/axiosInstance";
+import DisplayAuth from "../../Auth/DisplayAuth";
 
 class PostList extends Component {
   constructor(props) {
@@ -32,14 +33,14 @@ class PostList extends Component {
       }
     };
     fetchPosts();
-    const socket = openConnection("http://localhost:8080");
+    /* const socket = openConnection("http://localhost:8080");
     socket.on("hello", (data) => {
       console.log(data)
     });
     socket.emit("message", "User is typing!!")
     socket.on("message", (data) => {
       console.log(data)
-    })
+    }) */
   }
 
   handleUpdatePostReactions = async (post, name) => {
@@ -80,6 +81,7 @@ class PostList extends Component {
 
     return (
       <section>
+        <DisplayAuth signOut={this.props.onSignOut} />
         <h2 className="text-2xl font-semibold text-slate-700 mb-5">Posts</h2>
         {initialPost}
       </section>
@@ -89,6 +91,7 @@ class PostList extends Component {
 
 const mapStateToProps = (state) => ({
   posts: state.posts.allPosts,
+  user: state.users,
 });
 
 const mapDispatchToProps = () => ({
