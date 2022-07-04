@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 
+import { toast } from "react-toastify";
+
 import openConnection from "socket.io-client";
 
 import { fetchAllPosts, updatePostReactions } from "../../../slices/postSlices";
@@ -21,6 +23,10 @@ class PostList extends Component {
     };
   }
   componentDidMount() {
+    const from = this.props.location.state?.from;
+    if (from && from === "/auth/login") {
+      toast.success("Signin Successfull!", { toastId: "success1" });
+    }
     const fetchPosts = async () => {
       try {
         this.setState({ status: "loading" });

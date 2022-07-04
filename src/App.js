@@ -1,17 +1,29 @@
+import React, { lazy, Suspense } from "react";
+
 import { Route, Routes, useNavigate } from "react-router";
 import { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import Layout from "./components/Layout";
-import Auth from "./containers/Auth/Auth";
-import AddPost from "./containers/features/posts/AddPost";
-import PostList from "./containers/features/posts/PostList";
-import SinglePost from "./containers/features/posts/SinglePost";
 import { auth } from "./firebase/firebase";
 import { signOut } from "firebase/auth";
 import { signInUser, userSignOut } from "./slices/userSlices";
 
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import axios from "./axios/axiosInstance";
+
+const AuthComponent = lazy(() => import("./containers/Auth/Auth"));
+const AddPostComponent = lazy(() =>
+  import("./containers/features/posts/AddPost")
+);
+const PostListComponent = lazy(() =>
+  import("./containers/features/posts/PostList")
+);
+const SinglePostComponent = lazy(() =>
+  import("./containers/features/posts/SinglePost")
+);
 
 function App() {
   const dispatch = useDispatch();
@@ -26,10 +38,10 @@ function App() {
         localStorage.removeItem("token");
         localStorage.removeItem("email");
         localStorage.removeItem("expirationDate");
-        return navigate("/auth/login")
+        return navigate("/auth/login");
       })
       .catch((err) => console.log(err));
-  }, [dispatch]);
+  }, [dispatch, navigate]);
 
   const checkAuthSignOutTime = useCallback(
     (expirationTime) => {
@@ -54,19 +66,17 @@ function App() {
       axios
         .get(`user/${email}`)
         .then((user) => {
-          const factoredExpiration =
-            tokenExpiration.getTime() - new Date().getTime();
+          const factoredExpiration = tokenExpiration - new Date();
           if (!isLoggedIn) {
-            dispatch(
-              signInUser({
-                userId: user.data.data._id?.toString(),
-                email: email,
-                fullName: user.data.data.fullName,
-                imageUrl: imageUrl,
-                isLoggedIn: true,
-                token: token,
-              })
-            );
+            const signInObj = {
+              userId: user.data.data._id?.toString(),
+              email: email,
+              fullName: user.data.data.fullName,
+              imageUrl: imageUrl,
+              isLoggedIn: true,
+              token: token,
+            };
+            dispatch(signInUser(signInObj));
             checkAuthSignOutTime(factoredExpiration);
           }
         })
@@ -78,26 +88,42 @@ function App() {
 
   return (
     <div className="">
-      <Routes>
-        <Route element={<Layout />}>
-          <Route path="/" element={<PostList onSignOut={signOutUser} />} />
-          <Route path="addPost" element={<AddPost onSignOut={signOutUser} />} />
-          <Route
-            path="posts/post/:postId"
-            element={<SinglePost onSignOut={signOutUser} />}
-          />
-          <Route path="addPost/:postId" element={<AddPost />} />
-          <Route
-            path="auth/login"
-            element={
-              <Auth
-                onSignOut={signOutUser}
-                checkAuthSignOutTime={checkAuthSignOutTime}
-              />
-            }
-          />
-        </Route>
-      </Routes>
+      <Suspense
+        fallback={
+          <span className="flex h-3 w-3">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-3 w-3 bg-purple-500"></span>
+          </span>
+        }
+      >
+        <Routes>
+          <Route element={<Layout />}>
+            <Route
+              path="/"
+              element={<PostListComponent onSignOut={signOutUser} />}
+            />
+            <Route
+              path="addPost"
+              element={<AddPostComponent onSignOut={signOutUser} />}
+            />
+            <Route
+              path="posts/post/:postId"
+              element={<SinglePostComponent onSignOut={signOutUser} />}
+            />
+            <Route path="addPost/:postId" element={<AddPostComponent />} />
+            <Route
+              path="auth/login"
+              element={
+                <AuthComponent
+                  onSignOut={signOutUser}
+                  checkAuthSignOutTime={checkAuthSignOutTime}
+                />
+              }
+            />
+          </Route>
+        </Routes>
+        <ToastContainer />
+      </Suspense>
     </div>
   );
 }

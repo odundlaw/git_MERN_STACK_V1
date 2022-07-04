@@ -5,13 +5,25 @@ import listStyle from "../constants/listStyle";
 const NavigationItems = () => {
   return (
     <>
-      <NavLink to="/" className={({ isActive }) => listStyle(isActive)}>
+      <NavLink
+        data-mdb-ripple="true"
+        data-mdb-ripple-color="dark"
+        to="/"
+        className={({ isActive }) => listStyle(isActive)}
+      >
         Posts
       </NavLink>
-      <NavLink to="addPost" className={({ isActive }) => listStyle(isActive)}>
+      <NavLink
+        data-mdb-ripple="true"
+        data-mdb-ripple-color="dark"
+        to="addPost"
+        className={({ isActive }) => listStyle(isActive)}
+      >
         Add Post
       </NavLink>
       <NavLink
+        data-mdb-ripple="true"
+        data-mdb-ripple-color="dark"
         to="auth/login"
         className={({ isActive }) => listStyle(isActive)}
       >
